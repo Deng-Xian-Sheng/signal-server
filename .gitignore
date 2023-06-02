@@ -7,3 +7,4 @@ py/test_data
 config.yaml
 /data
 /*.json
+*.pyc
