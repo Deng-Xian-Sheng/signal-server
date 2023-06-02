@@ -1,0 +1,9 @@
+.idea
+*.log
+*.http
+env
+py/test_data
+.DS_Store
+config.yaml
+/data
+/*.json
