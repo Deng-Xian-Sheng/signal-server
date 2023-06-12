@@ -8,3 +8,4 @@ config.yaml
 /data
 /*.json
 *.pyc
+/py/web_rtc/signal-server/docs/*

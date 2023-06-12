@@ -42,7 +42,7 @@ from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from pydub.effects import compress_dynamic_range
 import librosa
-import threading
+from multiprocessing import Process
 
 # AUDIO_FORMAT 音频文件格式
 AUDIO_FORMAT = "mp3"
@@ -81,10 +81,10 @@ compress_dynamic_range_params = {
 
 
 # 音频类 用于将音频流变成网络流
-class AudioThread(threading.Thread):
+class AudioThread(Process):
     # 输入参数是音频流
     def __init__(self, audio_stream: bytes):
-        threading.Thread.__init__(self)
+        Process.__init__(self)
         self.audio_stream = audio_stream
 
     # 重写run()方法
