@@ -1,9 +1,20 @@
+//Copyright (c) [2023] [JinCanQi]
+//[make_data_set_so-vits-svc] is licensed under Mulan PubL v2.
+//You can use this software according to the terms and conditions of the Mulan PubL v2.
+//You may obtain a copy of Mulan PubL v2 at:
+//         http://license.coscl.org.cn/MulanPubL-2.0
+//THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+//EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+//MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+//See the Mulan PubL v2 for more details.
+
 package router
 
 import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "make_data_set_so-vits-svc/py/web_rtc/signal-server/docs"
 	"make_data_set_so-vits-svc/py/web_rtc/signal-server/middleware"
 	"make_data_set_so-vits-svc/py/web_rtc/signal-server/service"
 )
@@ -13,16 +24,17 @@ func Router(router *gin.Engine) {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	root := router.Group("/")
+	root.Use(middleware.Ctx(), middleware.Error())
 	{
-		root.Use(middleware.Recovery(), middleware.Auth(), middleware.Ctx(), middleware.Error())
 		offer := root.Group("offer/")
 		{
 			sdp := offer.Group("sdp/")
 			{
-				// GET /offer/sdp
-				sdp.GET("", service.Offer.SdpGet)
 				// POST /offer/sdp
 				sdp.POST("", service.Offer.SdpPost)
+				root.Use(middleware.Auth())
+				// GET /offer/sdp
+				sdp.GET("", service.Offer.SdpGet)
 			}
 			candidate := offer.Group("candidate/")
 			{

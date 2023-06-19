@@ -1,3 +1,13 @@
+//Copyright (c) [2023] [JinCanQi]
+//[make_data_set_so-vits-svc] is licensed under Mulan PubL v2.
+//You can use this software according to the terms and conditions of the Mulan PubL v2.
+//You may obtain a copy of Mulan PubL v2 at:
+//         http://license.coscl.org.cn/MulanPubL-2.0
+//THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+//EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+//MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+//See the Mulan PubL v2 for more details.
+
 package middleware
 
 import (
@@ -37,7 +47,7 @@ func Auth() gin.HandlerFunc {
 		}
 		// 如果key不为空
 		// 判断key是否在缓存中
-		if v, ok := cache.Cache.Get(cache.Key(key)); !ok || v == nil {
+		if v, ok := cache.Cache.Get(key); !ok || v == nil {
 			// 如果key不在缓存中
 			// 返回错误
 			c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.KeyNotFound})
@@ -53,9 +63,19 @@ func Auth() gin.HandlerFunc {
 func Ctx() gin.HandlerFunc {
 	// 为每个请求创建一个上下文
 	return func(c *gin.Context) {
+		// 获取请求头中的key
+		key := c.GetHeader(model.HeaderKey)
+		key = strings.TrimSpace(key)
+		// 如果key为空
+		if key == "" {
+			// 返回错误
+			c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.KeyIsEmpty})
+			return
+		}
+		// 如果key不为空
 		// 创建一个上下文
 		ctx := context.Background()
-		ctx = context.WithValue(ctx, model.HeaderKey, c.GetHeader(model.HeaderKey))
+		ctx = context.WithValue(ctx, model.HeaderKey, key)
 		// 将上下文放入gin上下文中
 		c.Set(model.GinCtxCtx, ctx)
 		// 继续执行

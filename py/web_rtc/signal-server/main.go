@@ -14,7 +14,8 @@ import (
 	"flag"
 	"github.com/gin-gonic/gin"
 	"log"
-	_ "make_data_set_so-vits-svc/py/web_rtc/signal-server/docs"
+	"make_data_set_so-vits-svc/py/web_rtc/signal-server/docs"
+	"make_data_set_so-vits-svc/py/web_rtc/signal-server/middleware"
 	"make_data_set_so-vits-svc/py/web_rtc/signal-server/router"
 	"os"
 )
@@ -30,17 +31,21 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
+	log.SetOutput(os.Stderr)
+
 	var ipPort string
-	flag.StringVar(&ipPort, "ip和port", ":8080", "ip:port")
+	flag.StringVar(&ipPort, "it", ":8080", "ip:port")
 	flag.Parse()
 
 	if ipPort == "" {
 		log.Panicln("请指定ip和port。")
 	}
 
-	log.SetOutput(os.Stderr)
+	docs.SwaggerInfo.Host = ipPort
+
 	gin.DefaultWriter = os.Stderr
 	r := gin.Default()
+	r.Use(middleware.Recovery())
 	router.Router(r)
 	if err := r.Run(ipPort); err != nil {
 		log.Panicln(err)
