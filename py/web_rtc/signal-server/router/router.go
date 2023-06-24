@@ -24,7 +24,7 @@ func Router(router *gin.Engine) {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	root := router.Group("/")
-	root.Use(middleware.Ctx(), middleware.Error())
+	root.Use(middleware.Error(),middleware.Recovery(),middleware.Ctx())
 	{
 		offer := root.Group("offer/")
 		{

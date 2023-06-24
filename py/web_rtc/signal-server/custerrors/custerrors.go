@@ -12,6 +12,7 @@ package custerrors
 
 const (
 	KeyIsEmpty                       = "key为空"
+	KeyIsTooLong                     = "key太长，长度不能超过32位"
 	KeyNotFound                      = "key未找到"
 	CtxIsEmpty                       = "ctx为空"
 	CacheOverrunMaxCost              = "缓存超出MaxCost，服务已达到最大负载"
@@ -22,8 +23,11 @@ const (
 	KeyIsExpired                     = "key已过期"
 
 	// offer 或 answer 的 sdp
-	SdpNoValues                      = "sdp没有值" // 对方（offer或answer）未放入，或已经被取出
+	SdpNoValues      = "sdp没有值" // 对方（offer或answer）未放入，或已经被取出
+	SdpAlreadyExist = "sdp已存在" // 对方（offer或answer）已经放入过一次，且只能放入一次
 
 	// offer 或 answer 的 candidate
-	CandidateNoValues				= "candidate没有值" // 对方（offer或answer）从未放入，或已全部取出
+	CandidateNoValues = "candidate没有值" // 对方（offer或answer）从未放入，或已全部取出
+
+	BodyIsEmpty = "body为空"
 )

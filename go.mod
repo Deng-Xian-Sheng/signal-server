@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/dgraph-io/ristretto v0.1.1
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gogf/gf/v2 v2.4.3
 	github.com/pion/webrtc/v3 v3.2.10

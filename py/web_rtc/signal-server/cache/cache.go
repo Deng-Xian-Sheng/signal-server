@@ -24,7 +24,7 @@ import (
 
 var (
 	Cache      = &myCache{Cache: &ristretto.Cache{}}
-	KeyHashMap = &sync.Map{}
+	keyHashMap = &sync.Map{}
 )
 
 const DefMaxCacheTTL = 30 * time.Second
@@ -36,22 +36,70 @@ func init() {
 		MaxCost:     1 << 30, // 缓存的最大成本 （1GB）。
 		BufferItems: 64,      // 每个获取缓冲区的键数。
 		OnEvict: func(item *ristretto.Item) {
+			defer func() {
+				if err := recover(); err != nil {
+					log.Println("cache OnReject回调发生错误 ",err)
+				}
+			}()
 			// 根据uint64 key conflict 获取字符串key
-			if key, ok := KeyHashMap.Load(fmt.Sprint(item.Key, item.Conflict)); ok && strings.HasPrefix(key.(string), GetKeyConst()) {
-				queue.GetOfferSdpQueue(key.(string)).Close()
-				queue.GetOfferCandidateQueue(key.(string)).Close()
-				queue.GetAnswerSdpQueue(key.(string)).Close()
-				queue.GetAnswerCandidateQueue(key.(string)).Close()
+			if key, ok := keyHashMap.Load(fmt.Sprint(item.Key, item.Conflict)); ok && key != nil && strings.HasPrefix(key.(string), GetKeyConst()) {
+				wg := &sync.WaitGroup{}
+				wg.Add(4)
+				go func ()  {
+					defer func() {
+						if err := recover(); err != nil {
+							log.Println("cache OnReject回调发生错误 ",err)
+						}
+						wg.Done()
+					}()
+					queue.GetOfferSdpQueue(key.(string)).Close()	
+				}()
+				go func ()  {
+					defer func() {
+						if err := recover(); err != nil {
+							log.Println("cache OnReject回调发生错误 ",err)
+						}
+						wg.Done()
+					}()
+					queue.GetOfferCandidateQueue(key.(string)).Close()
+				}()
+				go func ()  {
+					defer func() {
+						if err := recover(); err != nil {
+							log.Println("cache OnReject回调发生错误 ",err)
+						}
+						wg.Done()
+					}()
+					queue.GetAnswerSdpQueue(key.(string)).Close()
+				}()
+				go func ()  {
+					defer func() {
+						if err := recover(); err != nil {
+							log.Println("cache OnReject回调发生错误 ",err)
+						}
+						wg.Done()
+					}()
+					queue.GetAnswerCandidateQueue(key.(string)).Close()
+				}()
+				wg.Wait()
+				keyHashMap.Delete(fmt.Sprint(item.Key, item.Conflict))
 			} else {
 				log.Panicln(custerrors.CacheOnEvictNoGetKey)
 			}
 		},
 		OnReject: func(item *ristretto.Item) {
+			defer func() {
+				if err := recover(); err != nil {
+					log.Println("cache OnReject回调发生错误 ",err)
+				}
+			}()
 			log.Panicln(custerrors.CacheOverrunMaxCost)
 		},
 		KeyToHash: func(key interface{}) (uint64, uint64) {
 			v, vv := z.KeyToHash(key)
-			KeyHashMap.Store(fmt.Sprint(v, vv), key)
+			if vvv,ok := key.(string); ok && strings.HasPrefix(vvv, GetKeyConst()){
+				keyHashMap.Store(fmt.Sprint(v, vv), key)
+			}
 			return v, vv
 		},
 	})
@@ -84,6 +132,7 @@ func (c *myCache) SetWithTTL(key interface{}, value interface{}, cost int64, ttl
 		ttl = DefMaxCacheTTL
 	}
 	cost = 1
+	value = fmt.Sprint(int64(ttl))
 	if keyStr, ok := key.(string); ok {
 		key = fmt.Sprintf(keyConst, keyStr)
 	}
@@ -100,4 +149,11 @@ func (c *myCache) Get(key interface{}) (interface{}, bool) {
 		key = fmt.Sprintf(keyConst, keyStr)
 	}
 	return c.Cache.Get(key)
+}
+
+func (c *myCache) GetTTL(key interface{}) (time.Duration, bool) {
+	if keyStr, ok := key.(string); ok {
+		key = fmt.Sprintf(keyConst, keyStr)
+	}
+	return c.Cache.GetTTL(key)
 }

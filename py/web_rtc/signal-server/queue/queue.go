@@ -48,7 +48,7 @@ type myQueue struct {
 func NewOfferSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerSdpKey, key)}
 
-	if _, ok := queueMap.Load(varMyQueue.Key); ok {
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -60,18 +60,26 @@ func NewOfferSdpQueue(key string) MyQueue {
 func GetOfferSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerSdpKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok {
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}
 	log.Panicln(custerrors.QueueGetFailBecauseNotExists)
 	return nil
 }
+func HasOfferSdpQueue(key string) bool {
+	varMyQueue := &myQueue{Key: fmt.Sprintf(offerSdpKey, key)}
+
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
+		return true
+	}
+	return false
+}
 
 func NewOfferCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerCandidateKey, key)}
 
-	if _, ok := queueMap.Load(varMyQueue.Key); ok {
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -83,18 +91,26 @@ func NewOfferCandidateQueue(key string) MyQueue {
 func GetOfferCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerCandidateKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok {
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}
 	log.Panicln(custerrors.QueueGetFailBecauseNotExists)
 	return nil
 }
+func HasOfferCandidateQueue(key string) bool {
+	varMyQueue := &myQueue{Key: fmt.Sprintf(offerCandidateKey, key)}
+
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
+		return true
+	}
+	return false
+}
 
 func NewAnswerSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerSdpKey, key)}
 
-	if _, ok := queueMap.Load(varMyQueue.Key); ok {
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -106,18 +122,26 @@ func NewAnswerSdpQueue(key string) MyQueue {
 func GetAnswerSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerSdpKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok {
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}
 	log.Panicln(custerrors.QueueGetFailBecauseNotExists)
 	return nil
 }
+func HasAnswerSdpQueue(key string) bool {
+	varMyQueue := &myQueue{Key: fmt.Sprintf(answerSdpKey, key)}
+
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
+		return true
+	}
+	return false
+}
 
 func NewAnswerCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerCandidateKey, key)}
 
-	if _, ok := queueMap.Load(varMyQueue.Key); ok {
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -129,12 +153,20 @@ func NewAnswerCandidateQueue(key string) MyQueue {
 func GetAnswerCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerCandidateKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok {
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}
 	log.Panicln(custerrors.QueueGetFailBecauseNotExists)
 	return nil
+}
+func HasAnswerCandidateQueue(key string) bool {
+	varMyQueue := &myQueue{Key: fmt.Sprintf(answerCandidateKey, key)}
+
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
+		return true
+	}
+	return false
 }
 
 // Close Close由cache的OnEvict触发，调用此方法会关闭此队列，通常只有在请求方已经与对方建立webrtc连接后（信令服务器已完成服务）才会调用此方法

@@ -12,12 +12,16 @@ package main
 
 import (
 	"flag"
-	"github.com/gin-gonic/gin"
 	"log"
 	"make_data_set_so-vits-svc/py/web_rtc/signal-server/docs"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/middleware"
+
 	"make_data_set_so-vits-svc/py/web_rtc/signal-server/router"
+	"make_data_set_so-vits-svc/py/web_rtc/signal-server/tool"
+	"net"
 	"os"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 // 大致想法
@@ -41,11 +45,28 @@ func main() {
 		log.Panicln("请指定ip和port。")
 	}
 
-	docs.SwaggerInfo.Host = ipPort
+	if false {
+		if host, port, err := net.SplitHostPort(ipPort); err != nil {
+			log.Panicln(err)
+		} else {
+			if port == "" {
+				log.Panicln("请指定port。")
+			}
+			if host == "" {
+				ips, err := tool.GetNetWorkIp()
+				if err != nil {
+					log.Panicln(err)
+				}
+				if len(ips) > 0 {
+					docs.SwaggerInfo.Host = net.JoinHostPort(ips[len(ips)-1], port)
+				}
+			}
+		}
+	}
 
 	gin.DefaultWriter = os.Stderr
 	r := gin.Default()
-	r.Use(middleware.Recovery())
+	r.Use(cors.Default())
 	router.Router(r)
 	if err := r.Run(ipPort); err != nil {
 		log.Panicln(err)
