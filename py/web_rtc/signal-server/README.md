@@ -17,4 +17,6 @@ If you are running signal-server, you can view the interface documentation by ac
 
 Here is a supplement to the swagger interface documentation, which is obviously difficult to get started with the swagger interface documentation alone.
 
+<!-- include(README.md) -->
+
 [//]: # (TODO )

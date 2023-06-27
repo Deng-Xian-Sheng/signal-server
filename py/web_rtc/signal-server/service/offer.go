@@ -62,9 +62,6 @@ func (o *offer) SdpGet(c *gin.Context) {
 		return
 	}
 
-	t,_:= cache.Cache.GetTTL(common.Ctx.GetKey(ctx))
-	log.Println("ttl:",t)
-
 	c.JSON(200, model.GeneralRes{Data: answerQueue.Pop().(string)})
 }
 
@@ -103,8 +100,6 @@ func (o *offer) SdpPost(c *gin.Context) {
 	}
 	queue.NewOfferSdpQueue(common.Ctx.GetKey(ctx)).Push(req.Data)
 
-	t,_:= cache.Cache.GetTTL(common.Ctx.GetKey(ctx))
-	log.Println("ttl:",t)
 	c.JSON(200, model.GeneralRes{})
 }
 
@@ -141,8 +136,6 @@ func (o *offer) CandidateGet(c *gin.Context) {
 		return
 	}
 
-	t,_:= cache.Cache.GetTTL(common.Ctx.GetKey(ctx))
-	log.Println("ttl:",t)
 	c.JSON(200, model.GeneralRes{Data: candidateQueue.Pop().(string)})
 }
 
@@ -194,7 +187,5 @@ func (o *offer) CandidatePost(c *gin.Context) {
 		queue.NewOfferCandidateQueue(common.Ctx.GetKey(ctx)).Push(req)
 	}
 
-	t,_:= cache.Cache.GetTTL(common.Ctx.GetKey(ctx))
-	log.Println("ttl:",t)
 	c.JSON(200, model.GeneralRes{})
 }
