@@ -20,7 +20,7 @@ const GinCtxCtx = "ctx"
 
 type GeneralRes struct {
 	Msg  string `json:"msg"`
-	Data interface{}
+	Data interface{} `json:"data"`
 }
 
 type VerifyInterface interface {

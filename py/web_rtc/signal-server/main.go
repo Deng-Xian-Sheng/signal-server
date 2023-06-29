@@ -21,11 +21,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 大致想法
-// 写一个信令服务器
-// 它不使用数据库也不使用redis 它支持并发 它通过内存存储数据（考虑使用库） 并且每条数据都有一个过期时间 过期后自动删除 过期时间最大30秒 可由请求方指定
-// 它使用gin启动一个http服务，此服务只有一个接口，请求方式为post，
-
 // @title Signal Server API
 // @version 1.0
 // @description 基于HTTP的高并发信令服务器，用于WebRTC的信令交换。（github.com/pion/webrtc/examples/pion-to-pion是她的主要用户）
