@@ -25,16 +25,16 @@ import (
 )
 
 func aaa() { //nolint:gocognit
-	offerAddr := flag.String("offer-address", ":50000", "Address that the Offer HTTP server is hosted on.")
-	answerAddr := flag.String("answer-address", "127.0.0.1:60000", "Address that the Answer HTTP server is hosted on.")
+	offerAddr := flag.String("offer-address", ":50000", "offer HTTP 服务器的地址。")
+	answerAddr := flag.String("answer-address", "127.0.0.1:60000", "answer HTTP 服务器的地址。")
 	flag.Parse()
 
 	var candidatesMux sync.Mutex
 	pendingCandidates := make([]*webrtc.ICECandidate, 0)
 
-	// Everything below is the Pion WebRTC API! Thanks for using it ❤️.
+	// 下面的所有内容都是Pion WebRTC API！感谢您使用它❤️.
 
-	// Prepare the configuration
+	// 准备配置
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
 			{
@@ -43,19 +43,19 @@ func aaa() { //nolint:gocognit
 		},
 	}
 
-	// Create a new RTCPeerConnection
+	// 创建新的 RTCPeerConnection
 	peerConnection, err := webrtc.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
 	}
 	defer func() {
 		if cErr := peerConnection.Close(); cErr != nil {
-			fmt.Printf("cannot close peerConnection: %v\n", cErr)
+			fmt.Printf("无法关闭对等连接: %v\n", cErr)
 		}
 	}()
 
-	// When an ICE candidate is available send to the other Pion instance
-	// the other Pion instance will add this candidate by calling AddICECandidate
+	// 当 ICE 候选项可用时，发送到其他 Pion 实例
+	// 另一个 Pion 实例将通过调用 AddICECandidate 来添加此候选项。
 	peerConnection.OnICECandidate(func(c *webrtc.ICECandidate) {
 		if c == nil {
 			return
@@ -72,9 +72,9 @@ func aaa() { //nolint:gocognit
 		}
 	})
 
-	// A HTTP handler that allows the other Pion instance to send us ICE candidates
-	// This allows us to add ICE candidates faster, we don't have to wait for STUN or TURN
-	// candidates which may be slower
+	// 一个 HTTP 处理程序，允许其他 Pion 实例向我们发送 ICE 候选
+	// 这使我们能够更快地添加 ICE 候选者，我们不必等待 STUN 或 TURN
+	// 可能较慢的候选人
 	http.HandleFunc("/candidate", func(w http.ResponseWriter, r *http.Request) {
 		candidate, candidateErr := ioutil.ReadAll(r.Body)
 		if candidateErr != nil {
@@ -85,7 +85,7 @@ func aaa() { //nolint:gocognit
 		}
 	})
 
-	// A HTTP handler that processes a SessionDescription given to us from the other Pion process
+	// 一个HTTP处理程序，用于处理从其他Pion进程提供给我们的会话描述
 	http.HandleFunc("/sdp", func(w http.ResponseWriter, r *http.Request) {
 		sdp := webrtc.SessionDescription{}
 		if sdpErr := json.NewDecoder(r.Body).Decode(&sdp); sdpErr != nil {
@@ -105,39 +105,39 @@ func aaa() { //nolint:gocognit
 			}
 		}
 	})
-	// Start HTTP server that accepts requests from the answer process
+	// 启动接受来自应答进程的请求的 HTTP 服务器
 	// nolint: gosec
 	go func() { panic(http.ListenAndServe(*offerAddr, nil)) }()
 
-	// Create a datachannel with label 'data'
+	// 创建带标签的数据通道 'data'
 	dataChannel, err := peerConnection.CreateDataChannel("data", nil)
 	if err != nil {
 		panic(err)
 	}
 
-	// Set the handler for Peer connection state
-	// This will notify you when the peer has connected/disconnected
+	// 为对等连接状态设置处理程序
+	// 这将在 连接/断开连接 时通知您
 	peerConnection.OnConnectionStateChange(func(s webrtc.PeerConnectionState) {
-		fmt.Printf("Peer Connection State has changed: %s\n", s.String())
+		fmt.Printf("连接状态已更改: %s\n", s.String())
 
 		if s == webrtc.PeerConnectionStateFailed {
-			// Wait until PeerConnection has had no network activity for 30 seconds or another failure. It may be reconnected using an ICE Restart.
-			// Use webrtc.PeerConnectionStateDisconnected if you are interested in detecting faster timeout.
-			// Note that the PeerConnection may come back from PeerConnectionStateDisconnected.
-			fmt.Println("Peer Connection has gone to failed exiting")
+			// 等待连接在 30 秒内没有网络活动或再次失败。可以使用 ICE 重新启动重新连接它。
+			// 使用 webrtc.PeerConnectionStateDisconnected 断开连接，如果您有兴趣检测更快的超时。
+			// 请注意，PeerConnection 可能会从 PeerConnectionStateDisconnected 返回。
+			fmt.Println("连接已进入退出失败状态")
 			os.Exit(0)
 		}
 	})
 
-	// Register channel opening handling
+	// 注册通道打开处理
 	dataChannel.OnOpen(func() {
-		fmt.Printf("Data channel '%s'-'%d' open. Random messages will now be sent to any connected DataChannels every 5 seconds\n", dataChannel.Label(), dataChannel.ID())
+		fmt.Printf("数据通道 '%s'-'%d' 打开。数据可发送到任何连接的数据通道\n", dataChannel.Label(), dataChannel.ID())
 
 		for range time.NewTicker(5 * time.Second).C {
 			message := signal.RandSeq(15)
-			fmt.Printf("Sending '%s'\n", message)
+			fmt.Printf("发送 '%s'\n", message)
 
-			// Send the message as text
+			// 以文本形式发送消息
 			sendTextErr := dataChannel.SendText(message)
 			if sendTextErr != nil {
 				panic(sendTextErr)
@@ -145,24 +145,24 @@ func aaa() { //nolint:gocognit
 		}
 	})
 
-	// Register text message handling
+	// 注册文本消息处理
 	dataChannel.OnMessage(func(msg webrtc.DataChannelMessage) {
-		fmt.Printf("Message from DataChannel '%s': '%s'\n", dataChannel.Label(), string(msg.Data))
+		fmt.Printf("来自数据通道的消息 '%s': '%s'\n", dataChannel.Label(), string(msg.Data))
 	})
 
-	// Create an offer to send to the other process
+	// 创建要发送到其他流程的offer。
 	offer, err := peerConnection.CreateOffer(nil)
 	if err != nil {
 		panic(err)
 	}
 
-	// Sets the LocalDescription, and starts our UDP listeners
-	// Note: this will start the gathering of ICE candidates
+	// 设置本地描述，并启动我们的 UDP 侦听器
+	// 注意：这将开始收集ICE候选人
 	if err = peerConnection.SetLocalDescription(offer); err != nil {
 		panic(err)
 	}
 
-	// Send our offer to the HTTP server listening in the other process
+	// 将我们的报价发送到在另一个进程中侦听的 HTTP 服务器
 	payload, err := json.Marshal(offer)
 	if err != nil {
 		panic(err)
@@ -174,6 +174,6 @@ func aaa() { //nolint:gocognit
 		panic(err)
 	}
 
-	// Block forever
+	// 永远阻止
 	select {}
 }
