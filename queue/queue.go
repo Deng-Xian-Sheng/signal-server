@@ -1,5 +1,5 @@
 //Copyright (c) [2023] [JinCanQi]
-//[make_data_set_so-vits-svc] is licensed under Mulan PubL v2.
+//[signal-server] is licensed under Mulan PubL v2.
 //You can use this software according to the terms and conditions of the Mulan PubL v2.
 //You may obtain a copy of Mulan PubL v2 at:
 //         http://license.coscl.org.cn/MulanPubL-2.0

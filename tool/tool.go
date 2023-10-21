@@ -1,5 +1,5 @@
 //Copyright (c) [2023] [JinCanQi]
-//[make_data_set_so-vits-svc] is licensed under Mulan PubL v2.
+//[signal-server] is licensed under Mulan PubL v2.
 //You can use this software according to the terms and conditions of the Mulan PubL v2.
 //You may obtain a copy of Mulan PubL v2 at:
 //         http://license.coscl.org.cn/MulanPubL-2.0
@@ -11,7 +11,7 @@
 package tool
 
 import (
-    "net"
+	"net"
 )
 
 // GetNetWorkIp 获取当前设备上所有的 IPv4 地址。
@@ -21,32 +21,32 @@ import (
 // 169.254.78.149
 // 192.168.1.1
 // 我感觉很玄学，如果你只需要一个ip地址，推荐选最后一个。（169.254.78.149是操作系统赋予的无法从外部访问的地址，大多用于操作系统内部）
-func GetNetWorkIp()(ips []string, err error) {
-    ifaces, err := net.Interfaces()
-    if err != nil {
-        return
-    }
+func GetNetWorkIp() (ips []string, err error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return
+	}
 
-    for _, i := range ifaces {
-        addrs, err2 := i.Addrs()
-        err = err2
-        if err != nil {
-            return
-        }
+	for _, i := range ifaces {
+		addrs, err2 := i.Addrs()
+		err = err2
+		if err != nil {
+			return
+		}
 
-        for _, addr := range addrs {
-            var ip net.IP
-            switch v := addr.(type) {
-            case *net.IPNet:
-                ip = v.IP
-            case *net.IPAddr:
-                ip = v.IP
-            }
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
 
-            if ip != nil && !ip.IsLoopback() && ip.To4() != nil {
-                ips = append(ips, ip.String())
-            }
-        }
-    }
-    return
+			if ip != nil && !ip.IsLoopback() && ip.To4() != nil {
+				ips = append(ips, ip.String())
+			}
+		}
+	}
+	return
 }

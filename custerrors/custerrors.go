@@ -1,5 +1,5 @@
 //Copyright (c) [2023] [JinCanQi]
-//[make_data_set_so-vits-svc] is licensed under Mulan PubL v2.
+//[signal-server] is licensed under Mulan PubL v2.
 //You can use this software according to the terms and conditions of the Mulan PubL v2.
 //You may obtain a copy of Mulan PubL v2 at:
 //         http://license.coscl.org.cn/MulanPubL-2.0
@@ -23,7 +23,7 @@ const (
 	KeyIsExpired                     = "key已过期"
 
 	// offer 或 answer 的 sdp
-	SdpNoValues      = "sdp没有值" // 对方（offer或answer）未放入，或已经被取出
+	SdpNoValues     = "sdp没有值" // 对方（offer或answer）未放入，或已经被取出
 	SdpAlreadyExist = "sdp已存在" // 对方（offer或answer）已经放入过一次，且只能放入一次
 
 	// offer 或 answer 的 candidate
