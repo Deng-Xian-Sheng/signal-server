@@ -11,12 +11,13 @@
 package router
 
 import (
+	_ "signal-server/docs"
+	"signal-server/middleware"
+	"signal-server/service"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "make_data_set_so-vits-svc/py/web_rtc/signal-server/docs"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/middleware"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/service"
 )
 
 func Router(router *gin.Engine) {
@@ -24,7 +25,7 @@ func Router(router *gin.Engine) {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	root := router.Group("/")
-	root.Use(middleware.Error(),middleware.Recovery(),middleware.Ctx())
+	root.Use(middleware.Error(), middleware.Recovery(), middleware.Ctx())
 	{
 		offer := root.Group("offer/")
 		{

@@ -2,10 +2,6 @@
 *.log
 *.http
 env
-py/test_data
 .DS_Store
 config.yaml
-/data
-/*.json
 *.pyc
-/py/web_rtc/signal-server/docs/*

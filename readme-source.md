@@ -1,5 +1,5 @@
 [//]: # (自述文件生成命令)
-[//]: # (p="README.md" && cat readme-source.md > ${p} && echo '\n\n```go' >> ${p} && go doc -all -src custerrors/custerrors.go >> ${p} && echo '```' >> ${p} -->)
+[//]: # (p="README.md" && cat readme-source.md > ${p} && echo -e "\n\n"'```go' >> ${p} && go doc -all -src custerrors/custerrors.go >> ${p} && echo '```' >> ${p})
 # signal-server 
 
 HTTP-based high concurrency signaling server for signaling exchange of Web RTC.（[github.com/pion/webrtc/examples/pion-to-pion](https://github.com/pion/webrtc/examples/pion-to-pion) is her main user）

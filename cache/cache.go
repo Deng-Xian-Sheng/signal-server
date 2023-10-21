@@ -12,14 +12,15 @@ package cache
 
 import (
 	"fmt"
-	"github.com/dgraph-io/ristretto"
-	"github.com/dgraph-io/ristretto/z"
 	"log"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/custerrors"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/queue"
+	"signal-server/custerrors"
+	"signal-server/queue"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/dgraph-io/ristretto"
+	"github.com/dgraph-io/ristretto/z"
 )
 
 var (
@@ -38,44 +39,44 @@ func init() {
 		OnEvict: func(item *ristretto.Item) {
 			defer func() {
 				if err := recover(); err != nil {
-					log.Println("cache OnReject回调发生错误 ",err)
+					log.Println("cache OnReject回调发生错误 ", err)
 				}
 			}()
 			// 根据uint64 key conflict 获取字符串key
 			if key, ok := keyHashMap.Load(fmt.Sprint(item.Key, item.Conflict)); ok && key != nil && strings.HasPrefix(key.(string), GetKeyConst()) {
 				wg := &sync.WaitGroup{}
 				wg.Add(4)
-				go func ()  {
+				go func() {
 					defer func() {
 						if err := recover(); err != nil {
-							log.Println("cache OnReject回调发生错误 ",err)
+							log.Println("cache OnReject回调发生错误 ", err)
 						}
 						wg.Done()
 					}()
-					queue.GetOfferSdpQueue(key.(string)).Close()	
+					queue.GetOfferSdpQueue(key.(string)).Close()
 				}()
-				go func ()  {
+				go func() {
 					defer func() {
 						if err := recover(); err != nil {
-							log.Println("cache OnReject回调发生错误 ",err)
+							log.Println("cache OnReject回调发生错误 ", err)
 						}
 						wg.Done()
 					}()
 					queue.GetOfferCandidateQueue(key.(string)).Close()
 				}()
-				go func ()  {
+				go func() {
 					defer func() {
 						if err := recover(); err != nil {
-							log.Println("cache OnReject回调发生错误 ",err)
+							log.Println("cache OnReject回调发生错误 ", err)
 						}
 						wg.Done()
 					}()
 					queue.GetAnswerSdpQueue(key.(string)).Close()
 				}()
-				go func ()  {
+				go func() {
 					defer func() {
 						if err := recover(); err != nil {
-							log.Println("cache OnReject回调发生错误 ",err)
+							log.Println("cache OnReject回调发生错误 ", err)
 						}
 						wg.Done()
 					}()
@@ -90,14 +91,14 @@ func init() {
 		OnReject: func(item *ristretto.Item) {
 			defer func() {
 				if err := recover(); err != nil {
-					log.Println("cache OnReject回调发生错误 ",err)
+					log.Println("cache OnReject回调发生错误 ", err)
 				}
 			}()
 			log.Panicln(custerrors.CacheOverrunMaxCost)
 		},
 		KeyToHash: func(key interface{}) (uint64, uint64) {
 			v, vv := z.KeyToHash(key)
-			if vvv,ok := key.(string); ok && strings.HasPrefix(vvv, GetKeyConst()){
+			if vvv, ok := key.(string); ok && strings.HasPrefix(vvv, GetKeyConst()) {
 				keyHashMap.Store(fmt.Sprint(v, vv), key)
 			}
 			return v, vv

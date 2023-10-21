@@ -1,0 +1,223 @@
+basePath: /
+definitions:
+  model.GeneralRes:
+    properties:
+      data: {}
+      msg:
+        type: string
+    type: object
+  model.SdpPostReq:
+    properties:
+      data:
+        description: sdp序列化为json字符串
+        type: string
+      key_ttl:
+        description: key的过期时间，单位秒，最大值为30
+        type: integer
+    required:
+    - data
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: 基于HTTP的高并发信令服务器，用于WebRTC的信令交换。（github.com/pion/webrtc/examples/pion-to-pion是她的主要用户）
+  title: Signal Server API
+  version: "1.0"
+paths:
+  /answer/candidate:
+    get:
+      description: 获取 offer 发送给 answer 的 candidate
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取 offer 发送给 answer 的 candidate
+      tags:
+      - answer
+    post:
+      consumes:
+      - text/plain
+      description: answer 发送 candidate 给 offer
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      - description: 请求参数，candidate序列化为json字符串
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: answer 发送 candidate 给 offer
+      tags:
+      - answer
+  /answer/sdp:
+    get:
+      description: 获取 offer 发送给 answer 的 sdp
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取 offer 发送给 answer 的 sdp
+      tags:
+      - answer
+    post:
+      consumes:
+      - text/plain
+      description: answer 发送 sdp 给 offer
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      - description: 请求参数，sdp序列化为json字符串
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: answer 发送 sdp 给 offer
+      tags:
+      - answer
+  /offer/candidate:
+    get:
+      description: 获取 answer 发送给 offer 的 candidate
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取 answer 发送给 offer 的 candidate
+      tags:
+      - offer
+    post:
+      consumes:
+      - text/plain
+      description: offer 发送 candidate 给 answer
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      - description: 请求参数，candidate字符串
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: offer 发送 candidate 给 answer
+      tags:
+      - offer
+  /offer/sdp:
+    get:
+      description: 获取 answer 发送给 offer 的 sdp
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取 answer 发送给 offer 的 sdp
+      tags:
+      - offer
+    post:
+      consumes:
+      - application/json
+      description: offer 发送 sdp 给 answer
+      parameters:
+      - description: key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权
+        in: header
+        name: key
+        required: true
+        type: string
+      - description: 请求参数，具体见结构体
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SdpPostReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralRes'
+      security:
+      - ApiKeyAuth: []
+      summary: offer 发送 sdp 给 answer
+      tags:
+      - offer
+swagger: "2.0"

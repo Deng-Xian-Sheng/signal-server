@@ -13,11 +13,11 @@ package service
 import (
 	"io"
 	"log"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/cache"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/common"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/custerrors"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/model"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/queue"
+	"signal-server/cache"
+	"signal-server/common"
+	"signal-server/custerrors"
+	"signal-server/model"
+	"signal-server/queue"
 	"strconv"
 	"strings"
 	"time"
@@ -25,20 +25,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type offer struct{}
+type answer struct{}
 
-var Offer = &offer{}
+var Answer = &answer{}
 
 // SdpGet
-// @Summary 获取 answer 发送给 offer 的 sdp
-// @Description 获取 answer 发送给 offer 的 sdp
-// @Tags offer
+// @Summary 获取 offer 发送给 answer 的 sdp
+// @Description 获取 offer 发送给 answer 的 sdp
+// @Tags answer
 // @Produce json
 // @Param key header string true "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权"
 // @Success 200 {object} model.GeneralRes
 // @Security ApiKeyAuth
-// @Router /offer/sdp [get]
-func (o *offer) SdpGet(c *gin.Context) {
+// @Router /answer/sdp [get]
+func (o *answer) SdpGet(c *gin.Context) {
 	ctx := common.Ctx.GetCtx(c)
 
 	ttl, ok := cache.Cache.Get(common.Ctx.GetKey(ctx))
@@ -46,7 +46,7 @@ func (o *offer) SdpGet(c *gin.Context) {
 		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.KeyIsExpired})
 		return
 	}
-	ttlInt64,err := strconv.Atoi(ttl.(string))
+	ttlInt64, err := strconv.Atoi(ttl.(string))
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
@@ -55,102 +55,28 @@ func (o *offer) SdpGet(c *gin.Context) {
 
 	cache.Cache.SetWithTTL(common.Ctx.GetKey(ctx), "", 1, time.Duration(ttlInt64))
 
-	answerQueue := queue.GetAnswerSdpQueue(common.Ctx.GetKey(ctx))
+	offerQueue := queue.GetOfferSdpQueue(common.Ctx.GetKey(ctx))
 
-	if answerQueue.Len() == 0 {
+	if offerQueue.Len() == 0 {
 		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.SdpNoValues})
 		return
 	}
 
-	c.JSON(200, model.GeneralRes{Data: answerQueue.Pop().(string)})
+	c.JSON(200, model.GeneralRes{Data: offerQueue.Pop().(string)})
 }
 
 // SdpPost
-// @Summary offer 发送 sdp 给 answer
-// @Description offer 发送 sdp 给 answer
-// @Tags offer
-// @Accept json
-// @Produce json
-// @Param key header string true "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权"
-// @Param body body model.SdpPostReq true "请求参数，具体见结构体"
-// @Success 200 {object} model.GeneralRes
-// @Security ApiKeyAuth
-// @Router /offer/sdp [post]
-func (o *offer) SdpPost(c *gin.Context) {
-	ctx := common.Ctx.GetCtx(c)
-
-	var req model.SdpPostReq
-	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Println(err)
-		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
-		return
-	}
-
-	if err := model.Verify(&req); err != nil {
-		log.Println(err)
-		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
-		return
-	}
-
-	cache.Cache.SetWithTTL(common.Ctx.GetKey(ctx), "", 1, time.Second*time.Duration(req.KeyTTL))
-
-	if queue.HasOfferSdpQueue(common.Ctx.GetKey(ctx)) {
-		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.SdpAlreadyExist})
-		return
-	}
-	queue.NewOfferSdpQueue(common.Ctx.GetKey(ctx)).Push(req.Data)
-
-	c.JSON(200, model.GeneralRes{})
-}
-
-// CandidateGet
-// @Summary 获取 answer 发送给 offer 的 candidate
-// @Description 获取 answer 发送给 offer 的 candidate
-// @Tags offer
-// @Produce json
-// @Param key header string true "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权"
-// @Success 200 {object} model.GeneralRes
-// @Security ApiKeyAuth
-// @Router /offer/candidate [get]
-func (o *offer) CandidateGet(c *gin.Context) {
-	ctx := common.Ctx.GetCtx(c)
-
-	ttl, ok := cache.Cache.Get(common.Ctx.GetKey(ctx))
-	if !ok || ttl == nil {
-		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.KeyIsExpired})
-		return
-	}
-	ttlInt64,err := strconv.Atoi(ttl.(string))
-	if err != nil {
-		log.Println(err)
-		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
-		return
-	}
-
-	cache.Cache.SetWithTTL(common.Ctx.GetKey(ctx), "", 1, time.Duration(ttlInt64))
-
-	candidateQueue := queue.GetAnswerCandidateQueue(common.Ctx.GetKey(ctx))
-
-	if candidateQueue.Len() == 0 {
-		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.CandidateNoValues})
-		return
-	}
-
-	c.JSON(200, model.GeneralRes{Data: candidateQueue.Pop().(string)})
-}
-
-// CandidatePost
-// @Summary offer 发送 candidate 给 answer
-// @Description offer 发送 candidate 给 answer
-// @Tags offer
+// @Summary answer 发送 sdp 给 offer
+// @Description answer 发送 sdp 给 offer
+// @Tags answer
 // @Accept text/plain
 // @Produce json
 // @Param key header string true "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权"
-// @Param body body string true "请求参数，candidate字符串"
+// @Param body body string true "请求参数，sdp序列化为json字符串"
 // @Success 200 {object} model.GeneralRes
 // @Security ApiKeyAuth
-// @Router /offer/candidate [post]
-func (o *offer) CandidatePost(c *gin.Context) {
+// @Router /answer/sdp [post]
+func (o *answer) SdpPost(c *gin.Context) {
 	ctx := common.Ctx.GetCtx(c)
 
 	ttl, ok := cache.Cache.Get(common.Ctx.GetKey(ctx))
@@ -158,7 +84,7 @@ func (o *offer) CandidatePost(c *gin.Context) {
 		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.KeyIsExpired})
 		return
 	}
-	ttlInt64,err := strconv.Atoi(ttl.(string))
+	ttlInt64, err := strconv.Atoi(ttl.(string))
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
@@ -168,7 +94,94 @@ func (o *offer) CandidatePost(c *gin.Context) {
 	cache.Cache.SetWithTTL(common.Ctx.GetKey(ctx), "", 1, time.Duration(ttlInt64))
 
 	var req string
-	reqByte,err := io.ReadAll(c.Request.Body)
+	reqByte, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
+		return
+	}
+	req = string(reqByte)
+
+	if strings.TrimSpace(req) == "" {
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.BodyIsEmpty})
+		return
+	}
+	if queue.HasAnswerSdpQueue(common.Ctx.GetKey(ctx)) {
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.SdpAlreadyExist})
+		return
+	}
+
+	queue.NewAnswerSdpQueue(common.Ctx.GetKey(ctx)).Push(req)
+
+	c.JSON(200, model.GeneralRes{})
+}
+
+// CandidateGet
+// @Summary 获取 offer 发送给 answer 的 candidate
+// @Description 获取 offer 发送给 answer 的 candidate
+// @Tags answer
+// @Produce json
+// @Param key header string true "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权"
+// @Success 200 {object} model.GeneralRes
+// @Security ApiKeyAuth
+// @Router /answer/candidate [get]
+func (o *answer) CandidateGet(c *gin.Context) {
+	ctx := common.Ctx.GetCtx(c)
+
+	ttl, ok := cache.Cache.Get(common.Ctx.GetKey(ctx))
+	if !ok || ttl == nil {
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.KeyIsExpired})
+		return
+	}
+	ttlInt64, err := strconv.Atoi(ttl.(string))
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
+		return
+	}
+
+	cache.Cache.SetWithTTL(common.Ctx.GetKey(ctx), "", 1, time.Duration(ttlInt64))
+
+	offerQueue := queue.GetOfferCandidateQueue(common.Ctx.GetKey(ctx))
+
+	if offerQueue.Len() == 0 {
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.CandidateNoValues})
+		return
+	}
+
+	c.JSON(200, model.GeneralRes{Data: offerQueue.Pop().(string)})
+}
+
+// CandidatePost
+// @Summary answer 发送 candidate 给 offer
+// @Description answer 发送 candidate 给 offer
+// @Tags answer
+// @Accept text/plain
+// @Produce json
+// @Param key header string true "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权"
+// @Param body body string true "请求参数，candidate序列化为json字符串"
+// @Success 200 {object} model.GeneralRes
+// @Security ApiKeyAuth
+// @Router /answer/candidate [post]
+func (o *answer) CandidatePost(c *gin.Context) {
+	ctx := common.Ctx.GetCtx(c)
+
+	ttl, ok := cache.Cache.Get(common.Ctx.GetKey(ctx))
+	if !ok || ttl == nil {
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: custerrors.KeyIsExpired})
+		return
+	}
+	ttlInt64, err := strconv.Atoi(ttl.(string))
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
+		return
+	}
+
+	cache.Cache.SetWithTTL(common.Ctx.GetKey(ctx), "", 1, time.Duration(ttlInt64))
+
+	var req string
+	reqByte, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatusJSON(200, model.GeneralRes{Msg: err.Error()})
@@ -181,10 +194,10 @@ func (o *offer) CandidatePost(c *gin.Context) {
 		return
 	}
 
-	if queue.HasOfferCandidateQueue(common.Ctx.GetKey(ctx)) {
-		queue.GetOfferCandidateQueue(common.Ctx.GetKey(ctx)).Push(req)
-	}else{
-		queue.NewOfferCandidateQueue(common.Ctx.GetKey(ctx)).Push(req)
+	if queue.HasAnswerCandidateQueue(common.Ctx.GetKey(ctx)) {
+		queue.GetAnswerCandidateQueue(common.Ctx.GetKey(ctx)).Push(req)
+	} else {
+		queue.NewAnswerCandidateQueue(common.Ctx.GetKey(ctx)).Push(req)
 	}
 
 	c.JSON(200, model.GeneralRes{})

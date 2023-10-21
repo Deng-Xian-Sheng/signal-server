@@ -14,8 +14,8 @@ import (
 	"flag"
 	"log"
 
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/router"
 	"os"
+	"signal-server/router"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

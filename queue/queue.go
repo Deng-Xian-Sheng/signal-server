@@ -13,7 +13,7 @@ package queue
 import (
 	"fmt"
 	"log"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/custerrors"
+	"signal-server/custerrors"
 	"sync"
 
 	"github.com/gogf/gf/v2/container/gqueue"
@@ -48,7 +48,7 @@ type myQueue struct {
 func NewOfferSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerSdpKey, key)}
 
-	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil {
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -60,7 +60,7 @@ func NewOfferSdpQueue(key string) MyQueue {
 func GetOfferSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerSdpKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}
@@ -79,7 +79,7 @@ func HasOfferSdpQueue(key string) bool {
 func NewOfferCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerCandidateKey, key)}
 
-	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil {
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -91,7 +91,7 @@ func NewOfferCandidateQueue(key string) MyQueue {
 func GetOfferCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(offerCandidateKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}
@@ -110,7 +110,7 @@ func HasOfferCandidateQueue(key string) bool {
 func NewAnswerSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerSdpKey, key)}
 
-	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil {
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -122,7 +122,7 @@ func NewAnswerSdpQueue(key string) MyQueue {
 func GetAnswerSdpQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerSdpKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}
@@ -141,7 +141,7 @@ func HasAnswerSdpQueue(key string) bool {
 func NewAnswerCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerCandidateKey, key)}
 
-	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil{
+	if v, ok := queueMap.Load(varMyQueue.Key); ok && v != nil {
 		log.Panicln(custerrors.QueueNewFailBecauseAlreadyExists)
 	}
 
@@ -153,7 +153,7 @@ func NewAnswerCandidateQueue(key string) MyQueue {
 func GetAnswerCandidateQueue(key string) MyQueue {
 	varMyQueue := &myQueue{Key: fmt.Sprintf(answerCandidateKey, key)}
 
-	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil{
+	if queue, ok := queueMap.Load(varMyQueue.Key); ok && queue != nil {
 		varMyQueue.Queue = queue.(*gqueue.Queue)
 		return varMyQueue
 	}

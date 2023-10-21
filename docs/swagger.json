@@ -1,0 +1,352 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "基于HTTP的高并发信令服务器，用于WebRTC的信令交换。（github.com/pion/webrtc/examples/pion-to-pion是她的主要用户）",
+        "title": "Signal Server API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/answer/candidate": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取 offer 发送给 answer 的 candidate",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answer"
+                ],
+                "summary": "获取 offer 发送给 answer 的 candidate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "answer 发送 candidate 给 offer",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answer"
+                ],
+                "summary": "answer 发送 candidate 给 offer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数，candidate序列化为json字符串",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/answer/sdp": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取 offer 发送给 answer 的 sdp",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answer"
+                ],
+                "summary": "获取 offer 发送给 answer 的 sdp",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "answer 发送 sdp 给 offer",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "answer"
+                ],
+                "summary": "answer 发送 sdp 给 offer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数，sdp序列化为json字符串",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/offer/candidate": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取 answer 发送给 offer 的 candidate",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "offer"
+                ],
+                "summary": "获取 answer 发送给 offer 的 candidate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "offer 发送 candidate 给 answer",
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "offer"
+                ],
+                "summary": "offer 发送 candidate 给 answer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数，candidate字符串",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/offer/sdp": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取 answer 发送给 offer 的 sdp",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "offer"
+                ],
+                "summary": "获取 answer 发送给 offer 的 sdp",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "offer 发送 sdp 给 answer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "offer"
+                ],
+                "summary": "offer 发送 sdp 给 answer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "key是一个随机字符串由请求方生成，长度不能超过32位，用于鉴权",
+                        "name": "key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数，具体见结构体",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SdpPostReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.GeneralRes"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.GeneralRes": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SdpPostReq": {
+            "type": "object",
+            "required": [
+                "data"
+            ],
+            "properties": {
+                "data": {
+                    "description": "sdp序列化为json字符串",
+                    "type": "string"
+                },
+                "key_ttl": {
+                    "description": "key的过期时间，单位秒，最大值为30",
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

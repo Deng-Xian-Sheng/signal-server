@@ -3,14 +3,13 @@ package common
 import (
 	"context"
 	"log"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/custerrors"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/model"
+	"signal-server/custerrors"
+	"signal-server/model"
 
 	"github.com/gin-gonic/gin"
 )
 
-type ctx2 struct{
-
+type ctx2 struct {
 }
 
 var Ctx = &ctx2{}

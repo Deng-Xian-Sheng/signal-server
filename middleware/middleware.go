@@ -16,10 +16,10 @@ import (
 	"fmt"
 
 	"log"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/cache"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/common"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/custerrors"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/model"
+	"signal-server/cache"
+	"signal-server/common"
+	"signal-server/custerrors"
+	"signal-server/model"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -95,7 +95,7 @@ func Error() gin.HandlerFunc {
 		c.Next()
 		// 如果有错误
 		if len(c.Errors) > 0 {
-			 c.Writer.Write([]byte{})
+			c.Writer.Write([]byte{})
 			// 返回错误
 			l := make([]string, len(c.Errors))
 			for i, v := range c.Errors {

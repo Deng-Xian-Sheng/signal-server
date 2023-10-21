@@ -12,14 +12,14 @@ package model
 
 import (
 	"errors"
-	"make_data_set_so-vits-svc/py/web_rtc/signal-server/custerrors"
+	"signal-server/custerrors"
 )
 
 const HeaderKey = "key"
 const GinCtxCtx = "ctx"
 
 type GeneralRes struct {
-	Msg  string `json:"msg"`
+	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
 
